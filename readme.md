@@ -64,7 +64,7 @@ for ($i=0; $i<$len; $i++) {
         }
     }
 }
-if (strlen($longest)) {
+if (strlen($longest)>3) {
     echo 'The longest palindrome substring: ', $longest, "\n";
     exit;
 }
