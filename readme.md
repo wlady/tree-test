@@ -27,6 +27,7 @@ INSERT INTO `category` (`id`, `parent_category_id`, `name`) VALUES
 (12, 2, 'Автожир');
 
 ```
+Используемые ключи описаны в структуре таблицы.
 
 Так данные могут выглядеть на HTML странице:
 
@@ -49,14 +50,21 @@ INSERT INTO `category` (`id`, `parent_category_id`, `name`) VALUES
 Выборка всех категорий верхнего уровня, начинающихся на “авто”:
 
 ```sql
-SELECT * FROM (SELECT parent_category_id, GROUP_CONCAT(id) children, COUNT(id) cnt, name FROM `category` GROUP BY parent_category_id ORDER by id ) cats WHERE cnt>1 AND name LIKE 'авто%’;
+SELECT * FROM (
+  SELECT parent_category_id, GROUP_CONCAT(id) children, COUNT(id) cnt, name 
+  FROM `category` 
+  GROUP BY parent_category_id) cats 
+WHERE cnt>1 AND name LIKE 'авто%’;
 ```
 ![sql1](sql1.png)
 
 Выборка всех категорий, имеющих не более трёх подкатегорий следующего уровня (без глубины):
 
 ```sql
-SELECT * FROM (SELECT parent_category_id, GROUP_CONCAT(id) children, COUNT(id) cnt FROM `category` GROUP BY parent_category_id) cats WHERE cnt<3;
+SELECT * FROM (
+  SELECT parent_category_id, GROUP_CONCAT(id) children, COUNT(id) cnt 
+  FROM `category` GROUP BY parent_category_id) cats 
+WHERE cnt<3;
 ```
 ![sql2](sql2.png)
 
@@ -64,6 +72,14 @@ SELECT * FROM (SELECT parent_category_id, GROUP_CONCAT(id) children, COUNT(id) c
 Выборка всех категорий нижнего уровня (т.е. не имеющих детей):
 
 ```sql
-SELECT * FROM category WHERE id NOT IN (SELECT parent_category_id FROM `category` GROUP BY parent_category_id);
+SELECT * FROM category 
+WHERE id NOT IN (
+  SELECT parent_category_id 
+  FROM `category` 
+  GROUP BY parent_category_id
+);
 ```
 ![sql3](sql3.png)
+
+Поле `children` выводится для примера и может быть использовано для рекурсивных операций.
+
