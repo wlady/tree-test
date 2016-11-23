@@ -12,56 +12,17 @@
     <div id="tree"></div>
 </div>
 <script>
-    var tree = [
-        {
-            text: "Автомобили",
-            nodes: [
-                {
-                    text: "Легковые",
-                    nodes: [
-                        {
-                            text: "Седан"
-                        },
-                        {
-                            text: "Хетчбек",
-                            nodes: [
-                                {
-                                    text: "Кабриолет"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    text: "Грузовые"
-                },
-                {
-                    text: "Автобусы"
-                }
-            ]
-        },
-        {
-            text: "Самолеты",
-            nodes: [
-            {
-                text: "Планер"
-            },
-            {
-                text: "Автожир"
-            }
-        ]
-        },
-        {
-            text: "Мотоциклы"
-        },
-        {
-            text: "Катера"
-        }
-    ];
     $(document).ready(function() {
-        $('#tree').treeview({
-            data: tree,
-            levels: 5
+        $.ajax({
+            url: '/tree.php',
+            method: 'POST',
+            complete: function(response) {
+                var tree = $.parseJSON(response.responseText);
+                $('#tree').treeview({
+                    data: tree,
+                    levels: 5
+                });
+            }
         });
     });
 </script>
