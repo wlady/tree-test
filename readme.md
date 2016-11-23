@@ -142,7 +142,7 @@ SELECT
             id = c.parent_category_id
       )
       parent,
-      GROUP_CONCAT(c.id) ids,
+      GROUP_CONCAT(c.id) children,
       GROUP_CONCAT(c.name) path 
    FROM
       category c 

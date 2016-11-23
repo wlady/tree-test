@@ -10,7 +10,7 @@ $pdo = new PDO("mysql:host=localhost;dbname=test;charset=utf8", "root", "");
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 
-$stmt = $pdo->prepare('SELECT (SELECT parent_category_id FROM category WHERE id=c.parent_category_id) id, (SELECT name FROM category WHERE id=c.parent_category_id) parent, GROUP_CONCAT(c.id) ids, GROUP_CONCAT(c.name) path FROM `category` c WHERE c.parent_category_id>0 GROUP BY c.parent_category_id');
+$stmt = $pdo->prepare('SELECT (SELECT parent_category_id FROM category WHERE id=c.parent_category_id) id, (SELECT name FROM category WHERE id=c.parent_category_id) parent, GROUP_CONCAT(c.id) children, GROUP_CONCAT(c.name) path FROM `category` c WHERE c.parent_category_id>0 GROUP BY c.parent_category_id');
 $stmt->execute();
 $rows = $stmt->fetchAll();
 
