@@ -87,18 +87,19 @@ CREATE TABLE category (
 );
 
 INSERT INTO `category` (`id`, `parent_category_id`, `name`) VALUES
-(1, 0, 'Автомобили'),
-(2, 0, 'Самолеты'),
-(3, 0, 'Мотоциклы'),
-(4, 0, 'Катера'),
-(5, 1, 'Легковые'),
-(6, 1, 'Грузовые'),
-(7, 1, 'Автобусы'),
-(8, 5, 'Седан'),
-(9, 5, 'Хетчбек'),
-(10, 9, 'Кабриолет'),
-(11, 2, 'Планер'),
-(12, 2, 'Автожир');
+(1, 0, 'Каталог'),
+(2, 1, 'Автомобили'),
+(3, 1, 'Самолеты'),
+(4, 1, 'Мотоциклы'),
+(5, 1, 'Катера'),
+(6, 2, 'Легковые'),
+(7, 2, 'Грузовые'),
+(8, 2, 'Автобусы'),
+(9, 6, 'Седан'),
+(10, 6, 'Хетчбек'),
+(11, 10, 'Кабриолет'),
+(12, 3, 'Планер'),
+(13, 3, 'Автожир');
 
 ```
 Используемые ключи описаны в структуре таблицы.
@@ -121,24 +122,82 @@ INSERT INTO `category` (`id`, `parent_category_id`, `name`) VALUES
 
 #### Варианты решения простых задач
 
+Выборка всех категорий для последующего построения дерева:
+
+```sql
+SELECT
+(
+   SELECT
+      parent_category_id 
+   FROM
+      category 
+   WHERE
+      id = c.parent_category_id) id,
+      (
+         SELECT
+            name 
+         FROM
+            category 
+         WHERE
+            id = c.parent_category_id
+      )
+      parent,
+      GROUP_CONCAT(c.id) ids,
+      GROUP_CONCAT(c.name) path 
+   FROM
+      category c 
+   WHERE
+      c.parent_category_id > 0 
+   GROUP BY
+      c.parent_category_id
+```
+
+![sql4](sql4.png)
+
+
 Выборка всех категорий верхнего уровня, начинающихся на “авто”:
 
 ```sql
-SELECT * FROM (
-  SELECT parent_category_id, GROUP_CONCAT(id) children, COUNT(id) cnt, name 
-  FROM `category` 
-  GROUP BY parent_category_id) cats 
-WHERE cnt>1 AND name LIKE 'авто%’;
+SSELECT
+    * 
+ FROM
+    (
+       SELECT
+          parent_category_id,
+          GROUP_CONCAT(id) children,
+          COUNT(id) cnt,
+          name 
+       FROM
+          category 
+       GROUP BY
+          parent_category_id
+    )
+    cats 
+ WHERE
+    cnt > 1 
+    AND name LIKE 'авто%'
 ```
 ![sql1](sql1.png)
 
 Выборка всех категорий, имеющих не более трёх подкатегорий следующего уровня (без глубины):
 
 ```sql
-SELECT * FROM (
-  SELECT parent_category_id, GROUP_CONCAT(id) children, COUNT(id) cnt 
-  FROM `category` GROUP BY parent_category_id) cats 
-WHERE cnt<3;
+SELECT
+   * 
+FROM
+   (
+      SELECT
+         parent_category_id,
+         GROUP_CONCAT(id) children,
+         COUNT(id) cnt 
+      FROM
+         ` category ` 
+      GROUP BY
+         parent_category_id
+   )
+   cats 
+WHERE
+   cnt < 3
 ```
 ![sql2](sql2.png)
 
@@ -146,12 +205,20 @@ WHERE cnt<3;
 Выборка всех категорий нижнего уровня (т.е. не имеющих детей):
 
 ```sql
-SELECT * FROM category 
-WHERE id NOT IN (
-  SELECT parent_category_id 
-  FROM `category` 
-  GROUP BY parent_category_id
-);
+SELECT
+   * 
+FROM
+   category 
+WHERE
+   id NOT IN 
+   (
+      SELECT
+         parent_category_id 
+      FROM
+         category 
+      GROUP BY
+         parent_category_id 
+   )
 ```
 ![sql3](sql3.png)
 
