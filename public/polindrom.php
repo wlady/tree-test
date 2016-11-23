@@ -6,7 +6,7 @@
  * Time: 12:51
  */
 
-$origin = 'Sum summus mus';
+$origin = 'It is just A String'; //Sum summus mus';
 
 $str = strtolower(str_replace(' ', '', $origin));
 $len = strlen($str);
@@ -35,7 +35,7 @@ for ($i=0; $i<$len; $i++) {
         }
     }
 }
-if (strlen($longest)) {
+if (strlen($longest)>3) {
     echo 'The longest palindrome substring: ', $longest, "\n";
     exit;
 }
