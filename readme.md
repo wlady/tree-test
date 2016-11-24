@@ -11,7 +11,8 @@ CREATE TABLE `category` (
  `parent_category_id` int(11) NOT NULL,
  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
  PRIMARY KEY (`id`),
- UNIQUE KEY `unique_key` (`id`,`parent_category_id`)
+ UNIQUE KEY `unique_key` (`id`,`parent_category_id`),
+ KEY `parent_category_id` (`parent_category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `category` (`id`, `parent_category_id`, `name`) VALUES
