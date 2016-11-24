@@ -114,7 +114,7 @@ FROM
          GROUP_CONCAT(id) children,
          COUNT(id) cnt 
       FROM
-         ` category ` 
+         category 
       GROUP BY
          parent_category_id
    )
