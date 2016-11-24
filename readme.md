@@ -2,17 +2,17 @@
 
 ## Хранение дерева в базе данных
 
-Есть таблица в MySQL, наполненная тестовыми данными:
+Есть таблица в MySQL, наполненная вымышленными связями:
 
 ```sql
 DROP TABLE category;
-CREATE TABLE category (
-    id INT NOT NULL,
-    parent_category_id INT NOT NULL,
-    name varchar(100) not null,
-    PRIMARY KEY (id),
-    UNIQUE unique_key (id, parent_category_id)
-);
+CREATE TABLE `category` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `parent_category_id` int(11) NOT NULL,
+ `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+ PRIMARY KEY (`id`),
+ UNIQUE KEY `unique_key` (`id`,`parent_category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `category` (`id`, `parent_category_id`, `name`) VALUES
 (1, 0, 'Каталог'),
@@ -27,10 +27,10 @@ INSERT INTO `category` (`id`, `parent_category_id`, `name`) VALUES
 (10, 6, 'Хетчбек'),
 (11, 10, 'Кабриолет'),
 (12, 3, 'Планер'),
-(13, 3, 'Автожир');
-
+(13, 3, 'Автожир'),
+(14, 11, 'Soft Top'),
+(15, 11, 'Hard Top');
 ```
-Используемые ключи описаны в структуре таблицы.
 
 Так данные могут выглядеть на HTML странице:
 
@@ -50,34 +50,28 @@ INSERT INTO `category` (`id`, `parent_category_id`, `name`) VALUES
 
 #### Варианты решения простых задач
 
-Выборка всех категорий для последующего построения дерева:
+Выборка всех категорий для последующего построения дерева (см. [public/tree.php](public/tree.php)):
 
 ```sql
 SELECT
-(
-   SELECT
-      parent_category_id 
-   FROM
-      category 
-   WHERE
-      id = c.parent_category_id) id,
-      (
-         SELECT
-            name 
-         FROM
-            category 
-         WHERE
-            id = c.parent_category_id
-      )
-      parent,
-      GROUP_CONCAT(c.id) children,
-      GROUP_CONCAT(c.name) path 
-   FROM
-      category c 
-   WHERE
-      c.parent_category_id > 0 
-   GROUP BY
-      c.parent_category_id
+   parent_category_id id,
+   (
+      SELECT
+         name 
+      FROM
+         category 
+      WHERE
+         id = c.parent_category_id
+   )
+   parent,
+   GROUP_CONCAT(c.id) children,
+   GROUP_CONCAT(c.name) path 
+FROM
+   category c 
+WHERE
+   c.parent_category_id > 0 
+GROUP BY
+   c.parent_category_id
 ```
 
 ![sql4](sql4.png)
@@ -149,6 +143,3 @@ WHERE
    )
 ```
 ![sql3](sql3.png)
-
-Поле `children` выводится для примера и может быть использовано для рекурсивных операций.
-
